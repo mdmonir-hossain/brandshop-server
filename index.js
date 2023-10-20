@@ -26,10 +26,32 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
       await client.connect();
       const productsCollection = client.db("productsdb").collection("products");
-      app.post('/products', async (req, res) => {
-          const addProduct = req.body;
-          console.log(addProduct);
-          const result = await productsCollection.insertOne(addProduct);
+      const addtocartCollection = client
+        .db("productsdb")
+        .collection("addtocart");
+      
+      app.get('/products', async (req, res) => { 
+          const cursor = productsCollection.find();
+          const result = await cursor.toArray();
+          res.send(result);
+      })
+      app.get("/addtocart", async (req, res) => {
+        const cursor = addtocartCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+      });
+      
+      app.post("/products", async (req, res) => {
+        const addProduct = req.body;
+        console.log(addProduct);
+        const result = await productsCollection.insertOne(addProduct);
+        res.send(result);
+      });
+
+      app.post('/addtocart', async (req, res) => {
+          const addtocartproduct = req.body;
+          console.log(addtocartproduct);
+          const result = await addtocartCollection.insertOne(addtocartproduct);
           res.send(result);
 })
 
